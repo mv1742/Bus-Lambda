@@ -1,4 +1,5 @@
 package com.amazonaws.lambda.demo;
+import java.util.ArrayList;
 /*
  * Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
@@ -14,6 +15,7 @@ package com.amazonaws.lambda.demo;
  * permissions and limitations under the License.
  */
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -100,9 +102,18 @@ public class AmazonDynamoDBSample {
     		AmazonDynamoDBClient ddb = new AmazonDynamoDBClient(credentials);
     		Region region = Region.getRegion(Regions.fromName(regionName));
     		ddb.setRegion(region);
-            GeoDataManagerConfiguration config = new GeoDataManagerConfiguration(ddb, tableName);
+            GeoDataManagerConfiguration config = new GeoDataManagerConfiguration(ddb, tableName).withRangeKeyAttributeName("DeviceId");
             GeoDataManager geoDataManager = new GeoDataManager(config);
-            CreateTableRequest createTableRequest = GeoTableUtil.getCreateTableRequest(config);
+            List<KeySchemaElement> keySchema = new ArrayList<>();
+            keySchema.add(new KeySchemaElement("hashKey", KeyType.HASH));
+            keySchema.add(new KeySchemaElement("DeviceId", KeyType.RANGE));
+            
+            List<AttributeDefinition> attributeDefinition = new ArrayList<>();
+            attributeDefinition.add(new AttributeDefinition("hashKey", ScalarAttributeType.N));
+            attributeDefinition.add(new AttributeDefinition("DeviceId", ScalarAttributeType.S));
+            attributeDefinition.add(new AttributeDefinition("geohash", ScalarAttributeType.N));
+            CreateTableRequest createTableRequest = GeoTableUtil.getCreateTableRequest(config).withKeySchema(keySchema)
+            		.withAttributeDefinitions(attributeDefinition);
             // Create a table with a primary hash key named 'TIMESTAMP', which holds a string
 //            CreateTableRequest createTableRequest = new CreateTableRequest().withTableName(tableName)
 //                .withKeySchema(new KeySchemaElement().withAttributeName("TIMESTAMP").withKeyType(KeyType.HASH))
@@ -120,10 +131,10 @@ public class AmazonDynamoDBSample {
             System.out.println("Table Description: " + tableDescription);
 
             // Add an item
-            newItem(geoDataManager,"1", 2, 47.61121, -122.3350);
+            newItem(geoDataManager,"1", "2", 47.61121, -122.3350);
 
             // Add another item
-            newItem(geoDataManager,"2", 2, 68.61121, -112.31846);;
+            newItem(geoDataManager,"2", "1", 68.61121, -112.31846);;
 
             // Scan items
             GeoPoint centerPoint = new GeoPoint(47.6205, -122.3492);  
@@ -167,13 +178,13 @@ public class AmazonDynamoDBSample {
         }
     }
 
-    private static void newItem(GeoDataManager geoDataManager, String timestamp, int deviceId, double latitude, double longitude) {
+    private static void newItem(GeoDataManager geoDataManager, String timestamp, String deviceId, double latitude, double longitude) {
         GeoPoint geoPoint = new GeoPoint(latitude, longitude);
-        AttributeValue rangeKeyValue = new AttributeValue().withS(UUID.randomUUID().toString());
+        AttributeValue rangeKeyValue = new AttributeValue().withS(deviceId);
         PutPointRequest putPointRequest = new PutPointRequest(geoPoint, rangeKeyValue);
         
         putPointRequest.getPutItemRequest().addItemEntry("TIMESTAMP", new AttributeValue(timestamp));
-        putPointRequest.getPutItemRequest().addItemEntry("DeviceId", new AttributeValue().withN(Integer.toString(deviceId)));
+        //putPointRequest.getPutItemRequest().addItemEntry("DeviceId", new AttributeValue().withN(Integer.toString(deviceId)));
         PutPointResult putPointResult = geoDataManager.putPoint(putPointRequest);
         PutItemResult putItemResult = putPointResult.getPutItemResult();
         System.out.println("Result: " + putItemResult);
