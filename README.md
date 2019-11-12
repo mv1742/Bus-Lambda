@@ -5,11 +5,7 @@ Follow the link to the final paper [here](Adibhatla_D4GX_2019_Bus-Lambda.pdf).
 
 ### Real Time Transit Data (via https://www.streetsdatacollaborative.org/technical-overview/)
 
-![ A $10 Raspberry Pi Zero is a fully-functional wifi-equipped computer capable of retrieving its location. ](https://static1.squarespace.com/static/59948729a803bbad877d588e/t/5997b872f14aa1178c60949c/1503115399348/raspberry-pi-zero-w-wireless-256x256.png?format=1500w)
-
 A $10 Raspberry Pi Zero is a fully-functional wifi-equipped computer capable of retrieving its location.
-
-![ A recent ride on a New York City bus using the $10 Raspberry Pi device and Wifi-positioning to retrieve the bus's location. A citywide system can be built to develop real time bus schedule infrastructure at the fraction of what it costs today. ](https://static1.squarespace.com/static/59948729a803bbad877d588e/t/5997b8bdf14aa1178c609703/1503115491956/bustime.jpg?format=1500w)
 
 A recent ride on a New York City bus using the $10 Raspberry Pi device and Wifi-positioning to retrieve the bus's location. A citywide system can be built to develop real time bus schedule infrastructure at the fraction of what it costs today.
 
